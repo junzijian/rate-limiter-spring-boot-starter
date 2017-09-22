@@ -1,10 +1,12 @@
 package com.genxiaogu.ratelimiter.service.impl;
 
+import com.genxiaogu.ratelimiter.common.JedisUtil;
 import com.genxiaogu.ratelimiter.service.Limiter;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisTemplate;
+import redis.clients.jedis.Jedis;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -93,8 +95,6 @@ public class DistributedLimiter implements Limiter {
     }
 
 
-
-
     // ------------------------------------以下代码已废弃！仅留作笔记用----------------------------------------------------
     // ------------------------------------以下代码已废弃！仅留作笔记用----------------------------------------------------
     // ------------------------------------以下代码已废弃！仅留作笔记用----------------------------------------------------
@@ -134,6 +134,42 @@ public class DistributedLimiter implements Limiter {
         }
 
         return bool;
+    }
+
+
+    /**
+     * 5
+     * <p>
+     * 留作笔记用
+     *
+     * 这里确实不需要用到锁
+     *
+     * @param route
+     * @param limit
+     * @param obj
+     * @return
+     */
+    public boolean execute5(String route, final Integer limit, String obj) {
+
+        final String key = route.concat(obj);
+        final String value = "1";
+
+//        Jedis jedis = JedisUtil.getJedis();
+        Jedis jedis = new Jedis("192.168.189.128", 6379);
+
+        String setNxPx = jedis.set(key, value, "NX", "PX", 1000L);
+
+        if (null != setNxPx && setNxPx.equals("OK")) {
+
+            return true;
+        } else {
+
+            if (jedis.incr(key) > limit) {
+                return false;
+            }
+            return true;
+        }
+
     }
 
     // ------------------------------------以上代码已废弃！仅留作笔记用----------------------------------------------------
