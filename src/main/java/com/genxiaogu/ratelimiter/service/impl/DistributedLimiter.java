@@ -1,8 +1,6 @@
 package com.genxiaogu.ratelimiter.service.impl;
 
 import com.genxiaogu.ratelimiter.service.Limiter;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -14,8 +12,6 @@ import java.util.ArrayList;
  * Created by junzijian on 2017/7/4.
  */
 public class DistributedLimiter implements Limiter {
-
-    private static final Logger logger = LogManager.getLogger(DistributedLimiter.class);
 
     public static final String TIME_OUT = "1000";
 
